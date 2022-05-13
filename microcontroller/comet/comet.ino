@@ -10,6 +10,12 @@ byte b = 0;
 
 long color = 0x00CED1;
 
+unsigned long curr_time = 0;
+unsigned long prev_time = 0;
+unsigned long wait_time = 0;
+
+unsigned int dir = 0;
+
 // Create an instance of the Adafruit_NeoPixel class called "leds".
 // That'll be what we refer to from here on...
 Adafruit_NeoPixel leds = Adafruit_NeoPixel(LED_COUNT, PIN, NEO_GRB + NEO_KHZ800);
@@ -36,51 +42,96 @@ void setup()
 }
 
 void loop() {
-  meteorRain(r, g, b, 1, 64, true, 25);
+  curr_time = millis();
+  if(curr_time - prev_time > wait_time){
+    meteorRain(r, g, b, 1, 64, true, 25, true);
+    wait_time = round(random(3000));
+    prev_time = curr_time;
+  }
 }
 
-void meteorRain(byte red, byte green, byte blue, byte meteorSize, byte meteorTrailDecay, boolean meteorRandomDecay, int SpeedDelay) {  
+void meteorRain(byte red, byte green, byte blue, byte meteorSize, byte meteorTrailDecay, boolean meteorRandomDecay, int SpeedDelay, bool randDir) {  
   setAll(0,0,0);
- 
-  for(int i = 0; i < LED_COUNT+20; i++) {
-   
-   
-    // fade brightness all LEDs one step
-    for(int j=0; j<LED_COUNT; j++) {
-      if( (!meteorRandomDecay) || (random(10)>5) ) {
-        fadeToBlack(j, meteorTrailDecay );        
+  
+  if(!randDir){
+    // alternate direction
+    for(int i = 0; i < LED_COUNT+20; i++) {     
+      // fade brightness all LEDs one step
+      for(int j=0; j<LED_COUNT; j++) {
+        if((!meteorRandomDecay) || (random(10)>5)) {
+          fadeToBlack(j, meteorTrailDecay );        
+        }
       }
-    }
-   
-    // draw meteor
-    for(int j = 0; j < meteorSize; j++) {
-      if( ( i-j <LED_COUNT) && (i-j>=0) ) {
-        setPixel(i-j, red, green, blue);
+     
+      // draw meteor
+      for(int j = 0; j < meteorSize; j++) {
+        if( ( i-j <LED_COUNT) && (i-j>=0) ) {
+          setPixel(i-j, red, green, blue);
+        }
       }
+      showStrip();
+      delay(SpeedDelay);
     }
-   
-    showStrip();
-    delay(SpeedDelay);
+    // switch direction
+    for(int i = LED_COUNT; i > -20; i--) { 
+      // fade brightness all LEDs one step
+      for(int j=0; j<LED_COUNT; j++) {
+        if( (!meteorRandomDecay) || (random(10)>5) ) {
+          fadeToBlack(j, meteorTrailDecay );        
+        }
+      }
+     
+      // draw meteor
+      for(int j = 0; j < meteorSize; j++) {
+        if((i+j < LED_COUNT) && (i+j>=0) ) {
+          setPixel(i+j, red, green, blue);
+        }
+      }
+     
+      showStrip();
+      delay(SpeedDelay);
+    }
   }
-  for(int i = LED_COUNT; i > -20; i--) {
-   
-   
-    // fade brightness all LEDs one step
-    for(int j=0; j<LED_COUNT; j++) {
-      if( (!meteorRandomDecay) || (random(10)>5) ) {
-        fadeToBlack(j, meteorTrailDecay );        
+  else{
+    // randomize direction
+    dir = round(random(2));
+    if(dir == 1){
+      for(int i = 0; i < LED_COUNT+20; i++) {     
+      // fade brightness all LEDs one step
+      for(int j=0; j<LED_COUNT; j++) {
+        if( (!meteorRandomDecay) || (random(10)>5) ) {
+          fadeToBlack(j, meteorTrailDecay );        
+        }
+      }
+      // draw meteor
+      for(int j = 0; j < meteorSize; j++) {
+        if( ( i-j <LED_COUNT) && (i-j>=0) ) {
+          setPixel(i-j, red, green, blue);
+        }
+      }
+      showStrip();
+      delay(SpeedDelay);      
       }
     }
-   
-    // draw meteor
-    for(int j = 0; j < meteorSize; j++) {
-      if((i+j < LED_COUNT) && (i+j>=0) ) {
-        setPixel(i+j, red, green, blue);
-      }
-    }
-   
-    showStrip();
-    delay(SpeedDelay);
+    else{
+      for(int i = LED_COUNT; i > -20; i--) { 
+      // fade brightness all LEDs one step
+        for(int j=0; j<LED_COUNT; j++) {
+          if( (!meteorRandomDecay) || (random(10)>5) ) {
+            fadeToBlack(j, meteorTrailDecay );        
+          }
+        }
+       
+        // draw meteor
+        for(int j = 0; j < meteorSize; j++) {
+          if((i+j < LED_COUNT) && (i+j>=0) ) {
+            setPixel(i+j, red, green, blue);
+          }
+        }
+        showStrip();
+        delay(SpeedDelay);
+      }  
+    }     
   }
 }
 
