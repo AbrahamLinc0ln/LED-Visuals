@@ -8,7 +8,6 @@ byte r = 0;
 byte g = 0;
 byte b = 0;
 
-long color = 0x00CED1;
 
 unsigned long curr_time = 0;
 unsigned long prev_time = 0;
@@ -30,7 +29,7 @@ void setup()
 //  r = (CYAN & 0xFF0000) >> 32;
 //  g = (CYAN & 0x00FF00) >> 16;
 //  b = (CYAN & 0x0000FF);
-
+  // define colors here. figure out way to read from a single hex variable later
   r = 0;
   g = 150;
   b = 70;
@@ -42,6 +41,7 @@ void setup()
 }
 
 void loop() {
+  // start a meteor based on random time
   curr_time = millis();
   if(curr_time - prev_time > wait_time){
     meteorRain(r, g, b, 1, 64, true, 25, true);
