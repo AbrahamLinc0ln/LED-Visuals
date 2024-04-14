@@ -1,5 +1,0 @@
-A place for developing different LED visuals using a microcontroller and ws2128b LED strip(s). 
-
-The microcontroller code can be found under 'microcontroller' and is programmed using Arduino IDE.
-
-Eventually I'll add another folder for software to controller said micrcontroller from an app.
